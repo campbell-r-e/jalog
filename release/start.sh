@@ -1,0 +1,1 @@
+java -jar jalog.jar
