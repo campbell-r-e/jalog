@@ -3,10 +3,16 @@
 <project name="jlog" default="CreateExecutableJarFileWithExternalLibrary">
 	<target name="CreateExecutableJarFileWithExternalLibrary">
 		<jar destfile="jalog.jar">
-			<zipfileset dir="" prefix="" />
+			<zipfileset dir="." prefix="">
+                <exclude name="jalog.jar"/>
+                <exclude name="ecs-1.4.2.jar"/>
+                <exclude name="skinlf.jar"/>
+                <exclude name="SizeOf.jar"/>
+                <exclude name="build.xml"/>
+            </zipfileset>
 			<zipfileset src="ecs-1.4.2.jar" />
-         <zipfileset src="skinlf.jar" />
-         <zipfileset src="SizeOf.jar" />
+            <zipfileset src="skinlf.jar" />
+            <zipfileset src="SizeOf.jar" />
 			<manifest>
 				<attribute name="Main-Class" value="jalog.Genesis" />
 			</manifest>

@@ -72,7 +72,7 @@ public class Mode {
    public static final Mode USB      = new Mode("USB") ;
    public static final Mode SSB      = new Mode("SSB") ;
    public static final Mode CW       = new Mode("CW") ;
-   public static final Mode FM       = new Mode("FW") ;
+   public static final Mode FM       = new Mode("FM") ;
    public static final Mode AM       = new Mode("AM") ;
    public static final Mode ASCI     = new Mode("ASCI") ;
    public static final Mode ATV      = new Mode("ATV") ;
