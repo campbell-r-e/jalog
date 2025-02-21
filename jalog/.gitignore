@@ -30,3 +30,5 @@ replay_pid*
 
 # User-specific configuration
 jalog.ini
+.classpath
+.project
