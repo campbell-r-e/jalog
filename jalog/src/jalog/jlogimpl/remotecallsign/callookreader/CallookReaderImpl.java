@@ -1,3 +1,10 @@
+/**
+ * Modified by: Campbell Reed (2025-02-21)
+ * - Updated Callook API URL to "https://callook.info/[callsign]/xml".
+ * - Fixed broken callsign lookups due to outdated URL format.
+ */
+
+
 package jalog.jlogimpl.remotecallsign.callookreader;
 
 import jalog.factory.CallsignInformationFactory;
@@ -29,8 +36,9 @@ import org.xml.sax.SAXException;
 public class CallookReaderImpl implements ConnectionReader {
    private RemoteCallsignInformation _callsignInformation ;
    
-   private static final String URL = "http://callook.info/index.php?callsign=" ;
-   private static final String DISPLAY = "&display=xml" ;
+   private static final String URL = "https://callook.info/" ;
+
+  
 
    /**
     * Creates a new CallLookReaderImpl
@@ -79,7 +87,7 @@ public class CallookReaderImpl implements ConnectionReader {
       docBuilderFactory.setIgnoringElementContentWhitespace(true);
       docBuilder = docBuilderFactory.newDocumentBuilder();
       
-      URL url = new URL(URL + callsign + DISPLAY);
+      URL url = new URL(URL + callsign +"/xml");
       URLConnection yc = url.openConnection();
       
       doc = docBuilder.parse(yc.getInputStream()) ;      
