@@ -38,3 +38,62 @@ JaLog is licensed under the GNU General Public License v2.0 (GPL-2.0), ensuring 
 Contribute & Support
 
 Contributions are welcome. If you have ideas, feature requests, or would like to contribute, visit the GitHub repository.
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Modification Notice (Version 1.06.1)
+
+This software is a modified version of JaLog (originally by minex123 under GPL-2.0).  
+Modified and released as version 1.16.1 by Campbell Reed on 2025-02-20.
+
+**Summary of changes:**
+- Fixed a typo issue in FM mode definition.
+- Reorganized project structure.
+- Updated Ant build configuration.
+
+
+Modification Disclosure
+
+Date of Modification: 2025-02-20
+Modified by: Campbell Reed
+
+Summary of Changes:
+
+    Project Structure: Reorganized source files under a dedicated src/ directory for better clarity and maintainability. Only Java source code remains within src/.
+    Build Configuration (build.xml): Modified Ant build file to compile source files into a separate build/ directory and store all generated JAR files into a dedicated dist/ folder for improved organization.
+    Code Fix: Corrected a typo in the Mode.java file related to the FM mode definition, ensuring proper functionality.
+
+Additional Notes:
+
+    Dependencies are manually managed and not automatically resolved by Ivy or other dependency managers.
+
+These changes were made to improve the build process, maintainability, and accuracy of the project. The original licensing terms under the GNU General Public License v2.0 (GPL-2.0) remain in effect.
+
+
+
+Release Notes (Version 1.0.6.2)
+
+Release Date: 2025-02-20Released by: Campbell Reed
+
+Summary of Changes:
+
+Code Reorganization:
+
+Java source code has been reformatted and reorganized into dedicated, structured folders under the src/ directory. This change enhances readability, maintainability, and project clarity.
+
+Notes:
+
+No changes in functionality or dependencies.
+
+Original licensing under GNU General Public License v2.0 (GPL-2.0) remains unchanged.
+
