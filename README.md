@@ -1,5 +1,12 @@
 JaLog - Amateur Radio Logging Software
+Original Author:
+
+- minex123 (2008) Ron Kinney (GitHub: septantrionalis)
+
+Contributors:
+- Campbell Reed - 2025
 About JaLog
+
 
 JaLog is a free and open-source logging application designed for amateur radio operators to efficiently track and manage QSO records. It provides a straightforward, user-friendly interface while offering useful features for organizing log entries.
 
