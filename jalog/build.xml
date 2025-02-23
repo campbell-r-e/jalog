@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<!--
+    Modified by: Campbell Reed
+    Date: 2025-02-20
+    Changes:
+    - Ensured JAR is placed in 'jalog/release/' without creating extra directories.
+    - Added classpath to include external libraries during compilation.
+    - Removed unnecessary mkdir command for dist.dir.
+-->
+
+<project name="jlog" default="CreateExecutableJarFileWithExternalLibrary">
+    <!-- Define directories -->
+    <property name="src.dir" value="src"/>
+    <property name="build.dir" value="build"/>
+    <property name="dist.dir" value="jalog/release"/>
+    <property name="lib.dir" value="lib"/>
+
+    <!-- Clean build directory and JAR file -->
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+        <delete file="${dist.dir}/jalog.jar"/>
+    </target>
+
+    <!-- Compile Java sources with classpath for external libraries -->
+    <target name="compile">
+        <mkdir dir="${build.dir}" />
+        <javac srcdir="${src.dir}" destdir="${build.dir}" includeantruntime="false">
+            <classpath>
+                <fileset dir="${lib.dir}">
+                    <include name="*.jar"/>
+                </fileset>
+            </classpath>
+        </javac>
+    </target>
+
+    <!-- Create executable JAR in 'jalog/release/' without creating extra directories -->
+    <target name="CreateExecutableJarFileWithExternalLibrary" depends="compile">
+        <delete file="${dist.dir}/jalog.jar"/>
+        <jar destfile="${dist.dir}/jalog.jar">
+            <fileset dir="${build.dir}" />
+            <zipfileset src="${lib.dir}/ecs-1.4.2.jar" />
+            <zipfileset src="${lib.dir}/skinlf.jar" />
+            <zipfileset src="${lib.dir}/SizeOf.jar" />
+            <manifest>
+                <attribute name="Main-Class" value="jalog.Genesis" />
+            </manifest>
+        </jar>
+    </target>
+    
+
+</project>
