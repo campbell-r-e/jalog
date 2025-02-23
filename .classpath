@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<classpath>
-	<classpathentry kind="src" path=""/>
-	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry exported="true" kind="lib" path="ecs-1.4.2.jar"/>
-	<classpathentry kind="lib" path="skinlf.jar" sourcepath="/skinlf-6.7/src"/>
-	<classpathentry kind="lib" path="SizeOf.jar" sourcepath="/SizeOf"/>
-	<classpathentry kind="output" path=""/>
-</classpath>
