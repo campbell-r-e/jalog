@@ -1,0 +1,49 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+// Project metadata
+version = '1.0'
+
+// Directories
+sourceSets.main.java.srcDirs = ['src']
+
+def buildDir = 'build'
+def distDir = 'jalog/release'
+
+task clean(type: Delete) {
+    delete buildDir, "$distDir/jalog.jar"
+}
+
+// Dependencies from Maven Central
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.apache.ecs:ecs:1.4.2'
+    implementation 'com.l2fprod.common:skinlf:6.7'
+    implementation 'org.sizeof:sizeof:1.0'
+}
+
+// Compile Java sources
+compileJava {
+    destinationDir = file(buildDir)
+}
+
+// Create JAR file
+jar {
+    archiveBaseName.set('jalog')
+    destinationDirectory.set(file(distDir))
+    from sourceSets.main.output
+    dependsOn compileJava
+    manifest {
+        attributes 'Main-Class': 'jalog.Genesis'
+    }
+}
+
+// Run the application
+application {
+    mainClass = 'jalog.Genesis'
+}
