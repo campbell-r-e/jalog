@@ -4,13 +4,15 @@ About Openlogbook
 Openlogbook is a free and open-source logging application designed for amateur radio operators to efficiently track and manage QSO records. It offers a user-friendly interface and a host of useful features to organize log entries effectively.
 
 This project is based on JaLog, originally developed by minex123 in 2013 with later contributions from Ron Kinney (GitHub: septantrionalis). Openlogbook has been rebranded and enhanced by Campbell Reed (2025) to provide improved functionality and maintainability.
+The project Will change the branding in the project soon. 
+
 Features
 
     Intuitive QSO Logging: Easily record and manage your contacts.
     Customizable Log Entries: Tailor your logging experience to your preferences.
     Cross-Platform Support: Compatible with Windows, macOS, and Linux.
-    Streamlined Interface: Focus on logging without unnecessary clutter.
     Open-Source & Free: Licensed under the GNU General Public License v2.0 (GPL-2.0).
+
 
 Installation & Usage
 
