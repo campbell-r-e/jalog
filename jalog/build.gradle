@@ -47,7 +47,7 @@ task copyIniFile(type: Copy) {
 }
 
 task runnableJar(type: Jar) {
-    archiveBaseName.set('jalog-all')
+    archiveBaseName.set('openlogbook')
     destinationDirectory.set(file(distDir))
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     manifest {

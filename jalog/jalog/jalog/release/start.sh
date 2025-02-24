@@ -1,1 +1,1 @@
-java -jar jalog.jar
+java -jar openlogbook-1.0.jar
