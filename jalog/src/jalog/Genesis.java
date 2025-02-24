@@ -37,6 +37,8 @@ import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.EventObject;
 
@@ -55,6 +57,7 @@ import javax.swing.UIManager;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 import javax.xml.parsers.ParserConfigurationException;
+import java.io.InputStream;
 
 import org.xml.sax.SAXException;
 
@@ -179,19 +182,37 @@ public class Genesis extends JFrame implements ThemeUpdateListener, Debugable {
    /**
     * Initializes application variables.
     */
-   private void coreInit() {
-      System.out.println("Loading " + INI_FILE) ;
-      try {
-         _optionsDialogBox = BasicFactory.createOptionsDialogBox(this) ;
-         Utility.load(INI_FILE, _optionsDialogBox);
-      } catch (IOException e) {
-         System.out.println("ini file missing.");
-         System.exit(0);
-      } catch (NumberFormatException e) {
-         System.out.println("Error parsing the ini file.  Attempting to continue.\n");
-         Debug.logException(e) ;
+    private void coreInit() {
+      File externalIniFile = new File("jalog.ini"); // Check in the execution directory
+  
+      // 1️⃣ First, try loading an external INI file from the same folder as the JAR
+      if (externalIniFile.exists()) {
+          System.out.println("Using external INI file: " + externalIniFile.getAbsolutePath());
+          try {
+              _optionsDialogBox = BasicFactory.createOptionsDialogBox(this);
+              Utility.load(externalIniFile.getAbsolutePath(), _optionsDialogBox);
+              return;
+          } catch (IOException e) {
+              System.out.println("Error reading external INI file. Using fallback.");
+          }
       }
-   }
+  
+      // 2️⃣ If not found, extract a default INI file from inside the JAR
+      System.out.println("INI file not found externally. Extracting default from JAR...");
+      try (InputStream in = Genesis.class.getClassLoader().getResourceAsStream("jalog.ini")) {
+          if (in != null) {
+              System.out.println("Extracting INI file from JAR...");
+              Files.copy(in, externalIniFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+              _optionsDialogBox = BasicFactory.createOptionsDialogBox(this);
+              Utility.load(externalIniFile.getAbsolutePath(), _optionsDialogBox);
+          } else {
+              System.err.println("ERROR: INI file not found anywhere!");
+          }
+      } catch (IOException e) {
+          e.printStackTrace();
+      }
+  }
+  
    
    /**
     * Initializes the components within this form.

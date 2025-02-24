@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Class-Path: ecs-1.4.2.jar skinlf.jar SizeOf.jar
+Main-Class: jalog.Genesis
+

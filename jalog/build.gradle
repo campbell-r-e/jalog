@@ -9,41 +9,71 @@ version = '1.0'
 // Directories
 sourceSets.main.java.srcDirs = ['src']
 
-def buildDir = 'build'
-def distDir = 'jalog/release'
+def distDir = 'jalog/jalog/release'
+def libDir = 'lib'
 
-task clean(type: Delete) {
-    delete buildDir, "$distDir/jalog.jar"
+// Use Gradle's built-in clean task (no need to redefine)
+tasks.named('clean') {
+    delete layout.buildDirectory
 }
 
-// Dependencies from Maven Central
+// Dependencies from Maven Central and local lib folder
 repositories {
     mavenCentral()
+    maven { url "https://repo1.maven.org/maven2/" }  // Default Maven
+    maven { url "https://jitpack.io" }               // GitHub-hosted JARs
+    maven { url "https://repo.spring.io/plugins-release/" }
 }
 
 dependencies {
-    implementation 'org.apache.ecs:ecs:1.4.2'
-    implementation 'com.l2fprod.common:skinlf:6.7'
-    implementation 'org.sizeof:sizeof:1.0'
+    implementation files("$libDir/ecs-1.4.2.jar")
+    implementation files("$libDir/skinlf.jar")
+    implementation files("$libDir/SizeOf.jar")
 }
 
 // Compile Java sources
-compileJava {
-    destinationDir = file(buildDir)
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+    classpath = files(fileTree(dir: libDir, includes: ['*.jar']))
 }
 
-// Create JAR file
-jar {
-    archiveBaseName.set('jalog')
+// Ensure the ini file is included in the JAR and copied to the output folder
+task copyIniFile(type: Copy) {
+    from 'src/main/resources'
+    include '*.ini'
+    into "$distDir"  // Copy to the release directory so it's available externally
+}
+
+task runnableJar(type: Jar) {
+    archiveBaseName.set('jalog-all')
     destinationDirectory.set(file(distDir))
-    from sourceSets.main.output
-    dependsOn compileJava
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     manifest {
-        attributes 'Main-Class': 'jalog.Genesis'
+        attributes(
+            'Main-Class': 'jalog.Genesis',  // Ensure correct package name
+            'Class-Path': configurations.runtimeClasspath.files.collect { it.name }.join(' ')  // Ensure dependencies load correctly
+        )
     }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    from('src/main/resources') {  // Ensure INI file is included inside the JAR
+        include '*.ini'
+    }
+    with jar
+}
+
+runnableJar.dependsOn copyIniFile
+
+// Generate Javadoc
+tasks.named('javadoc') {
+    source = sourceSets.main.allJava
+    destinationDirectory.set(file("$buildDir/docs/javadoc"))
 }
 
 // Run the application
 application {
-    mainClass = 'jalog.Genesis'
+    mainClass = 'jalog.Genesis'  // Use full package name
 }
