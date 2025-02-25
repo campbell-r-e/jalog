@@ -3,25 +3,24 @@ plugins {
     id 'application'
 }
 
-// Project metadata
+
 version = '1.0'
 
-// Directories
+
 sourceSets.main.java.srcDirs = ['src']
 
 def distDir = 'openlogbook/openlogbook/release'
 def libDir = 'lib'
 
-// Use Gradle's built-in clean task (no need to redefine)
+
 tasks.named('clean') {
     delete layout.buildDirectory
 }
 
-// Dependencies from Maven Central and local lib folder
 repositories {
     mavenCentral()
-    maven { url "https://repo1.maven.org/maven2/" }  // Default Maven
-    maven { url "https://jitpack.io" }               // GitHub-hosted JARs
+    maven { url "https://repo1.maven.org/maven2/" }  
+    maven { url "https://jitpack.io" }               
     maven { url "https://repo.spring.io/plugins-release/" }
 }
 
@@ -31,7 +30,7 @@ dependencies {
     implementation files("$libDir/SizeOf.jar")
 }
 
-// Compile Java sources
+
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -39,11 +38,11 @@ tasks.withType(JavaCompile).configureEach {
     classpath = files(fileTree(dir: libDir, includes: ['*.jar']))
 }
 
-// Ensure the ini file is included in the JAR and copied to the output folder
+
 task copyIniFile(type: Copy) {
     from 'src/main/resources'
     include '*.ini'
-    into "$distDir"  // Copy to the release directory so it's available externally
+    into "$distDir"  
 }
 
 task runnableJar(type: Jar) {
@@ -52,14 +51,14 @@ task runnableJar(type: Jar) {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     manifest {
         attributes(
-            'Main-Class': 'openlogbook.Genesis',  // Ensure correct package name
+            'Main-Class': 'openlogbook.Genesis',  
             'Class-Path': configurations.runtimeClasspath.files.collect { it.name }.join(' ')  // Ensure dependencies load correctly
         )
     }
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
-    from('src/main/resources') {  // Ensure INI file is included inside the JAR
+    from('src/main/resources') {  
         include '*.ini'
     }
     with jar
@@ -75,5 +74,5 @@ tasks.named('javadoc') {
 
 // Run the application
 application {
-    mainClass = 'openlogbook.Genesis'  // Use full package name
+    mainClass = 'openlogbook.Genesis'  
 }
