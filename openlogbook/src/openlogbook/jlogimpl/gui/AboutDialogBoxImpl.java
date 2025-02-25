@@ -67,7 +67,7 @@ public class AboutDialogBoxImpl implements AboutDialogBox {
    private void initComponents() {
       StringBuffer aboutString = new StringBuffer() ;
       aboutString.append("openlogbook " + ApiControl.getVersion()) ;
-      aboutString.append("(c) Copyright 2007.  All Rights Reserved.\n") ;
+      aboutString.append("Legacy information Jalog (c) Copyright 2007.  All Rights Reserved.\n") ;
       aboutString.append("\n") ;
       aboutString.append("Author:\n") ;
       aboutString.append("     Ron Kinney(KC0ZPS)\n") ;
