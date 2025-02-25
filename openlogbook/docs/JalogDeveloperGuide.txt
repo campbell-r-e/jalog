@@ -1,0 +1,131 @@
+openlogbook Source Code Guide for Developers
+
+Overview
+
+openlogbook is a Java-based logging application designed for amateur radio operators to manage their logbooks efficiently. The source code is structured into several packages, each addressing specific areas of functionality.
+
+Source Code Structure
+
+The primary source code is organized under src/openlogbook. The main packages are:
+
+1. openlogbook
+
+Purpose: Contains core application files, including the entry point Genesis.java.
+
+Key Files:
+
+Genesis.java: Main class to start the application.
+
+2. openlogbook.util
+
+Purpose: Utility classes used throughout the application.
+
+Key Classes:
+
+AppProperties.java: Manages application properties.
+
+StringUtility.java: Helper methods for string manipulation.
+
+UpdateManager.java: Handles application updates.
+
+Utility.java: General utility methods.
+
+3. openlogbook.jlogimpl
+
+Purpose: Implementation of the core logging functionalities.
+
+Sub-packages:
+
+logbook: Manages the logbook data.
+
+LogBookImpl.java: Core logbook operations.
+
+logentry: Handles individual log entries.
+
+LogEntryImpl.java: Represents a single log entry.
+
+CallsignImpl.java: Call sign details.
+
+RstImpl.java: RST (signal report) details.
+
+filehandler: File reading/writing.
+
+adif: ADIF (Amateur Data Interchange Format) file handling.
+
+ReadAdifFile.java: Read ADIF files.
+
+WriteAdifFile.java: Write ADIF files.
+
+xmlfilehandler: XML file handling.
+
+ParseXmlFile.java: Parse XML files.
+
+SaveXmlFile.java: Save XML files.
+
+remotecallsign: Retrieve remote call sign data.
+
+RemoteCallsignInformationImpl.java: Interface with remote services.
+
+callookreader: Callsign lookup.
+
+CallookReaderThread.java: Fetch data from Callook.info.
+
+gui: Graphical User Interface components.
+
+LogBookFrame.java: Main logbook window.
+
+logentrydialog: Dialogs for editing log entries.
+
+LogEntryDialog.java: Main dialog for log entry editing.
+
+optiondialog: Application settings dialogs.
+
+OptionsDialogBox.java: Manages user preferences.
+
+notepad: Notepad-like component for notes.
+
+NotepadFrame.java: Simple text editor.
+
+debug: Debugging utilities.
+
+DebugManager.java: Centralized debugging tool.
+
+4. openlogbook.jlog
+
+Purpose: Defines interfaces and abstract representations for the logging components.
+
+5. openlogbook.factory
+
+Purpose: Factory classes for creating instances of application components.
+
+6. openlogbook.tester
+
+Purpose: Testing utilities.
+
+Key Class:
+
+LogCreator.java: Generates logs for testing purposes.
+
+7. openlogbook.debug
+
+Purpose: Provides debugging interfaces.
+
+Development Tips
+
+Extend Functionality: When adding new features, ensure that implementations are added in the appropriate sub-package under jlogimpl.
+
+UI Changes: Modify or add components in the gui package. Maintain consistency with existing GUI patterns.
+
+File Handling: Use filehandler package to add support for new file formats.
+
+External Integration: For new remote services, follow patterns in remotecallsign.
+
+Build and Dependencies
+
+Build files and scripts are located at the root (build.xml).
+
+External dependencies are stored in lib/.
+
+Conclusion
+
+This guide aims to facilitate new feature integration by offering clarity on the codebase's structure and key components. Adhering to existing patterns will ensure smoother development and maintenance.

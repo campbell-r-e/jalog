@@ -1,0 +1,91 @@
+serialver -classpath /home/rkinney/workspace/jlog/ jlog.jlogimpl.gui.logentrydialog.GeneralPanel
+/Users/minex/Documents/workspace/openlogbook
+
+serialver -classpath . openlogbook.debug.monitor.CustomCommandDlg.ParameterTableModel
+
+
+
+Callsign(*)
+	_*CALL 				C 	 
+	_*OPERATOR 		C 	Callsign of person logging the QSO
+
+ContactAddress*
+	_*NAME 			C 	 
+	_*ADDRESS		  	M  As it will appear on the mailing label
+	_*CNTY 			C 	US County in the format STATE,COUNTY. For example GA,BARROW. Use CQ County list
+	_*CONT 			C 	Continent: NA,SA,EU,AF,OC,AS
+	_*STATE 			C 	US state
+
+ContactStationInformation*
+	_*QTH 				C 	 
+	_*IOTA 			C 	HYPHEN MUST BE INCLUDED. Example: NA-001 IOTA PROVIDES DISK IN THIS FORMAT
+	_*AGE 				N 	 
+	_*CQZ 				N 	JTextField (35, 21, 01)	CQ Zone
+	_*DXCC 			N 	JComboBox,Enum   Numeric identifiers from ARRL. See table below
+	_*GRIDSQUARE 	C 	JTextField (4, 6, or 8) or however many characters
+	_*ITUZ 			N 	JTextField (1 to 90) ITU Zone
+	
+Era*
+	_*QSO_DATE 		D 	YYYYMMDD in UTC
+	_*TIME_OFF 		C 	HHMM or HHMMSS in UTC
+	_*TIME_ON 		C 	HHMM or HHMMSS in UTC
+	
+FrequencyInformation*
+	_*MODE 			C 	SSB, CW, RTTY, TOR=AMTOR, PKT, AM, FM, SSTV, ATV, PAC=PACTOR,CLO=CLOVER
+	_*BAND 			C 	160M, 80M, 40M, 30M, 20M, 17M, 15M, 12M, 10M, 6M, 2M, 70CM,23CM...see table below
+	_*FREQ 			N 	<freq:6>14.195 	in Megahertz
+	_*TX_PWR 		   N 	Power of this station in watts
+	_*RX_PWR 			N 	Power of other station in Watts
+	
+Qsl*
+	_*QSLRDATE 		D 	QSL Rcvd Date
+	_*QSLSDATE 		D 	QSL Sent DateADDRESS  	M  	As it will appear on the mailing label
+	_*QSL_RCVD 		C 	Y=Yes, N=No, R=Requested, I=Ignore or Invalid
+	_*QSL_SENT 		C 	Y=Yes, N=No, R=Requested, I=Ignore or Invalid
+	_*QSLMSG 			M 	Personal message to appear on qsl card
+	_*QSL_VIA 			C 	JTextField
+	
+Rst*
+	_*RST_RCVD 		C 	 
+	_*RST_SENT 		C 	 
+
+Misc*
+	_*COMMENT 		C 	Comment field for QSO
+	_*ARRL_SECT 		C 	JTextField 
+	_*CONTEST_ID 	C 	JTextField Contest Indentifier -- SS, ARRLVHF, ARRLDX, etc.
+	_*NOTES 		   M 	Long text for digital copy, third party traffic, etc.
+	_*PFX 			C 	WPX prefix
+	_*TEN_TEN 		N 	 
+	_*VE_PROV  		C  2-letter abbreviations: AB, BC, MB, NB, NF, NS, NT, ON, PE, QC, SK, YT
+	
+Satellite*
+	_*PROP_MODE 		C 	JTextField
+	_*SAT_MODE 		C 	JTextField(SAT A, SAT B, SAT RA) Satellite Mode
+	_*SAT_NAME 		C 	JTextField Name of satellite
+
+Contest*
+	_*SRX 				N 	Received serial number for a contest QSO
+	_*STX 				N 	Transmitted serial number for a contest QSO
+
+NotFound :
+ Locator in Misc (remove)
+
+
+
+
+
+General Panel :
+Station:          _______
+Start Date/Time : _______ ______ [Now]
+End Time:                 ______ [Now]
+
+
+Address Panel :
+
+
+openlogbook.debug
+
+com.mcdata.debug.Debugable (interface)
+com.mcdata.debug.FullDebugable (interface)
+com.mcdata.debug.DebugTable (interface)
+com.mcdata.debug.Debug (class)
