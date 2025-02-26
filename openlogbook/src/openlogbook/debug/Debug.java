@@ -255,10 +255,6 @@ public class Debug {
       }
       if (nodeObject instanceof Debugable) {
          Debugable debugable = (Debugable)nodeObject ;
-         if (debugable == null) {
-            return ;
-         }
-
          Debug.monitorDataCollect("Starting " + nodeName + " " + System.identityHashCode(debugable));
          try {
             saveTable(zipOut, debugable.getDebugTable(), nodeName, fileNames) ;
