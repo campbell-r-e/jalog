@@ -32,3 +32,73 @@ replay_pid*
 openlogbook.ini
 .classpath
 .project
+
+
+# Compiled class files
+*.class
+*.jar
+*.war
+*.ear
+
+# Build directories
+bin/
+build/
+out/
+target/
+
+# Gradle-specific files
+.gradle/
+!gradle/wrapper/gradle-wrapper.jar
+build/
+
+# Eclipse/VS Code/IntelliJ specific files
+*.log
+*.swp
+.vscode/
+.idea/
+*.iml
+*.ipr
+*.iws
+.classpath
+.project
+.settings/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# Java dependency caches
+.m2/
+.gradle/
+!gradle/wrapper/gradle-wrapper.properties
+
+# Logs and debug output
+*.log
+hs_err_pid*
+replay_pid*
+
+# Generated files
+gen/
+dist/
+node_modules/
+
+# Sensitive or environment-specific files
+.env
+*.key
+*.keystore
+
+# Lombok cache
+.lombok/
+
+# JUnit and testing reports
+test-results/
+test-output/
+
+# Ignore local configuration files
+local.properties
