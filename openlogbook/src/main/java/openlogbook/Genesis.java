@@ -61,8 +61,9 @@ import java.io.InputStream;
 
 import org.xml.sax.SAXException;
 
-import com.l2fprod.gui.plaf.skin.Skin;
-import com.l2fprod.gui.plaf.skin.SkinLookAndFeel;
+
+
+import com.formdev.flatlaf.FlatLightLaf;
 
 /**
  * So it all begins.
@@ -183,9 +184,9 @@ public class Genesis extends JFrame implements ThemeUpdateListener, Debugable {
     * Initializes application variables.
     */
     private void coreInit() {
-      File externalIniFile = new File("openlogbook.ini"); // Check in the execution directory
+      File externalIniFile = new File("openlogbook.ini"); 
   
-      // 1️⃣ First, try loading an external INI file from the same folder as the JAR
+    
       if (externalIniFile.exists()) {
           System.out.println("Using external INI file: " + externalIniFile.getAbsolutePath());
           try {
@@ -197,7 +198,7 @@ public class Genesis extends JFrame implements ThemeUpdateListener, Debugable {
           }
       }
   
-      // 2️⃣ If not found, extract a default INI file from inside the JAR
+      
       System.out.println("INI file not found externally. Extracting default from JAR...");
       try (InputStream in = Genesis.class.getClassLoader().getResourceAsStream("openlogbook.ini")) {
           if (in != null) {
@@ -928,9 +929,8 @@ public class Genesis extends JFrame implements ThemeUpdateListener, Debugable {
             UIManager.put("JDesktopPane.backgroundEnabled", true);
             UIManager.put("ScrollBar.alternateLayout", true);
 
-            Skin theSkinToUse = SkinLookAndFeel.loadThemePack("themes/" + _optionsDialogBox.getSelectedTheme());
-            SkinLookAndFeel.setSkin(theSkinToUse) ;    
-            UIManager.setLookAndFeel("com.l2fprod.gui.plaf.skin.SkinLookAndFeel");
+               
+            UIManager.setLookAndFeel(new FlatLightLaf());
          } else {
             System.out.println("Using the system theme.") ;
          }

@@ -23,7 +23,7 @@ public abstract class AbstractOptionsDialogBox extends GenericDialog {
     * @param showWarningOnExit Set to true if this dialog should warn the user before closing.
     */
    public AbstractOptionsDialogBox(JFrame parent, String title, boolean showWarningOnExit) {
-      super(parent, "Options", false);
+      super(parent, title, showWarningOnExit);
    }
    
    /**
@@ -86,14 +86,14 @@ public abstract class AbstractOptionsDialogBox extends GenericDialog {
     * 
     * @return the selected theme.
     */
-   public abstract String getSelectedTheme() ;
+  
    
    /**
     * Sets the selected theme.
     * 
     * @param theme the theme to selected.
     */
-   public abstract void setSelectedTheme(String theme) ;
+
    
    /**
     * Cleans up this dialog box.

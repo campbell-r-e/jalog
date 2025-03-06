@@ -3,15 +3,17 @@ plugins {
     id 'application'
 }
 
-
 version = '1.0'
 
-
-sourceSets.main.java.srcDirs = ['src']
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java', 'src'] // Ensure Gradle finds all Java files
+        }
+    }
+}
 
 def distDir = 'openlogbook/openlogbook/release'
-def libDir = 'lib'
-
 
 tasks.named('clean') {
     delete layout.buildDirectory
@@ -19,30 +21,17 @@ tasks.named('clean') {
 
 repositories {
     mavenCentral()
-    maven { url "https://repo1.maven.org/maven2/" }  
-    maven { url "https://jitpack.io" }               
-    maven { url "https://repo.spring.io/plugins-release/" }
+    maven { url "https://jitpack.io" }
 }
 
 dependencies {
-  
-    implementation files("$libDir/skinlf.jar")
-   
+    implementation 'com.formdev:flatlaf:3.2' // Ensure FlatLaf is in both compile and runtime
 }
-
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-    classpath = files(fileTree(dir: libDir, includes: ['*.jar']))
-}
-
-
-task copyIniFile(type: Copy) {
-    from 'src/main/resources'
-    include '*.ini'
-    into "$distDir"  
+    sourceCompatibility = JavaVersion.VERSION_17  // Upgrade from Java 8 to 17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 task runnableJar(type: Jar) {
@@ -51,28 +40,15 @@ task runnableJar(type: Jar) {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     manifest {
         attributes(
-            'Main-Class': 'openlogbook.Genesis',  
-            'Class-Path': configurations.runtimeClasspath.files.collect { it.name }.join(' ')  // Ensure dependencies load correctly
+            'Main-Class': 'openlogbook.Genesis',
+            'Class-Path': configurations.runtimeClasspath.files.collect { it.name }.join(' ')
         )
     }
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
-    from('src/main/resources') {  
-        include '*.ini'
-    }
-    with jar
 }
 
-runnableJar.dependsOn copyIniFile
-
-// Generate Javadoc
-tasks.named('javadoc') {
-    source = sourceSets.main.allJava
-    destinationDirectory.set(file("$buildDir/docs/javadoc"))
-}
-
-// Run the application
 application {
-    mainClass = 'openlogbook.Genesis'  
+    mainClass = 'openlogbook.Genesis'
 }
