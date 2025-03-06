@@ -27,7 +27,7 @@ repositories {
 dependencies {
   
     implementation files("$libDir/skinlf.jar")
-    implementation files("$libDir/SizeOf.jar")
+   
 }
 
 
