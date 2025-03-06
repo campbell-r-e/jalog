@@ -25,9 +25,9 @@ repositories {
 }
 
 dependencies {
-    implementation files("$libDir/ecs-1.4.2.jar")
+  
     implementation files("$libDir/skinlf.jar")
-    implementation files("$libDir/SizeOf.jar")
+   
 }
 
 

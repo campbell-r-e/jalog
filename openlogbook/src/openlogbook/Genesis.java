@@ -4,7 +4,7 @@ import openlogbook.debug.Debug;
 import openlogbook.debug.DebugTable;
 import openlogbook.debug.Debugable;
 import openlogbook.debug.PropertyDebugTable;
-import openlogbook.debug.instrumentation.ObjectSizer;
+
 import openlogbook.debug.monitor.DebugUi;
 import openlogbook.factory.AdifFileFactory;
 import openlogbook.factory.BasicFactory;
@@ -118,7 +118,7 @@ public class Genesis extends JFrame implements ThemeUpdateListener, Debugable {
       initComponents();
       Debug.addObject(null, this) ;
       Debug.addObject(null, UpdateManager.getInstance()) ;
-      Debug.addObject(null, new ObjectSizer()) ; // TODO
+      
       setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE) ;
    }
    
