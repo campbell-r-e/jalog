@@ -1,1 +1,0 @@
-java -jar openlogbook-1.0.jar

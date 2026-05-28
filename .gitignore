@@ -1,59 +1,33 @@
-# Compiled class file
+# Build output
+build/
+out/
+bin/
+target/
+dist/
+
+# Gradle
+.gradle/
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+
+# Compiled classes and packages
 *.class
-
-# Log file
-*.log
-
-# BlueJ files
-*.ctxt
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files #
 *.jar
 *.war
-*.nar
 *.ear
+*.nar
 *.zip
 *.tar.gz
 *.rar
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
-replay_pid*
-# macOS system files
-.DS_Store
+# Runtime / user data files
+*.adi
+notepad.dat
+jalog.ini
 
-# IDE project metadata
-.project
-
-# User-specific configuration
-.classpath
-.project
-
-
-# Compiled class files
-*.class
-*.war
-*.ear
-
-# Build directories
-bin/
-build/
-out/
-target/
-
-# Gradle-specific files
-.gradle/
-!gradle/wrapper/gradle-wrapper.jar
-build/
-
-# Eclipse/VS Code/IntelliJ specific files
-*.log
-*.swp
-.vscode/
+# IDE
 .idea/
+.vscode/
 *.iml
 *.ipr
 *.iws
@@ -61,42 +35,30 @@ build/
 .project
 .settings/
 
-# OS-specific files
+# macOS
 .DS_Store
+._*
 Thumbs.db
 
-# Temporary files
+# Logs and temp
+*.log
 *.tmp
 *.bak
 *.swp
 *.swo
-
-# Java dependency caches
-.m2/
-.gradle/
-!gradle/wrapper/gradle-wrapper.properties
-
-# Logs and debug output
-*.log
 hs_err_pid*
 replay_pid*
 
-# Generated files
-gen/
-dist/
-node_modules/
-
-# Sensitive or environment-specific files
+# Env / secrets
 .env
 *.key
 *.keystore
 
-# Lombok cache
-.lombok/
+# Node (semantic-release)
+node_modules/
 
-# JUnit and testing reports
+# Java tooling
+.m2/
+.lombok/
 test-results/
 test-output/
-
-# Ignore local configuration files
-local.properties

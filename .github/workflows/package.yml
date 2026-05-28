@@ -1,0 +1,172 @@
+name: Build Packages
+
+on:
+  push:
+    branches: [master, main]
+  workflow_dispatch:
+
+jobs:
+
+  # ── Linux → Fedora-compatible RPM ───────────────────────────────────────────
+  build-linux-rpm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Install rpmbuild
+        run: sudo apt-get install -y rpm
+
+      - name: Build JAR
+        run: ./gradlew jar
+        working-directory: jalog
+
+      - name: Prepare jpackage input
+        run: |
+          mkdir -p jalog/build/package-input
+          cp jalog/build/libs/jalog-*.jar jalog/build/package-input/
+          cp jalog/build/libs/jalog.ini jalog/build/package-input/ 2>/dev/null || true
+
+      - name: Get version
+        id: ver
+        run: |
+          echo "version=$(cd jalog && ./gradlew -q properties | grep '^version:' | awk '{print $2}')" >> "$GITHUB_OUTPUT"
+
+      - name: Package RPM
+        run: |
+          jpackage \
+            --type rpm \
+            --input jalog/build/package-input \
+            --main-jar "jalog-${{ steps.ver.outputs.version }}.jar" \
+            --main-class jalog.Genesis \
+            --name Jalog \
+            --app-version "${{ steps.ver.outputs.version }}" \
+            --description "Amateur Radio Logging Software" \
+            --vendor "Campbell Reed" \
+            --linux-package-name jalog \
+            --linux-menu-group "Utility" \
+            --linux-shortcut \
+            --java-options "--enable-native-access=ALL-UNNAMED" \
+            --dest jalog/build/packages
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux-rpm
+          path: jalog/build/packages/*.rpm
+
+  # ── Windows → MSI installer ─────────────────────────────────────────────────
+  build-windows-msi:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Build JAR
+        run: ./gradlew jar
+        working-directory: jalog
+        shell: bash
+
+      - name: Prepare jpackage input
+        shell: bash
+        run: |
+          mkdir -p jalog/build/package-input
+          cp jalog/build/libs/jalog-*.jar jalog/build/package-input/
+          cp jalog/build/libs/jalog.ini jalog/build/package-input/ 2>/dev/null || true
+
+      - name: Get version
+        id: ver
+        shell: bash
+        run: |
+          echo "version=$(cd jalog && ./gradlew -q properties | grep '^version:' | awk '{print $2}')" >> "$GITHUB_OUTPUT"
+
+      # MSI product version must be Major.Minor.Build (each 0-65535).
+      # Map e.g. "1.07" → "1.0.7" so the format is always three parts.
+      - name: Derive MSI-safe version
+        id: msi_ver
+        shell: bash
+        run: |
+          raw="${{ steps.ver.outputs.version }}"
+          parts=$(echo "$raw" | tr '.' '\n' | wc -l | tr -d ' ')
+          if [ "$parts" -lt 3 ]; then
+            msi_ver="${raw}.0"
+          else
+            msi_ver="$raw"
+          fi
+          echo "msi_version=$msi_ver" >> "$GITHUB_OUTPUT"
+
+      - name: Package MSI
+        shell: bash
+        run: |
+          jpackage \
+            --type msi \
+            --input jalog/build/package-input \
+            --main-jar "jalog-${{ steps.ver.outputs.version }}.jar" \
+            --main-class jalog.Genesis \
+            --name Jalog \
+            --app-version "${{ steps.msi_ver.outputs.msi_version }}" \
+            --description "Amateur Radio Logging Software" \
+            --vendor "Campbell Reed" \
+            --win-dir-chooser \
+            --win-menu \
+            --win-shortcut \
+            --java-options "--enable-native-access=ALL-UNNAMED" \
+            --dest jalog/build/packages
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-msi
+          path: jalog/build/packages/*.msi
+
+  # ── macOS → DMG ─────────────────────────────────────────────────────────────
+  build-macos-dmg:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Build JAR
+        run: ./gradlew jar
+        working-directory: jalog
+
+      - name: Prepare jpackage input
+        run: |
+          mkdir -p jalog/build/package-input
+          cp jalog/build/libs/jalog-*.jar jalog/build/package-input/
+          cp jalog/build/libs/jalog.ini jalog/build/package-input/ 2>/dev/null || true
+
+      - name: Get version
+        id: ver
+        run: |
+          echo "version=$(cd jalog && ./gradlew -q properties | grep '^version:' | awk '{print $2}')" >> "$GITHUB_OUTPUT"
+
+      - name: Package DMG
+        run: |
+          jpackage \
+            --type dmg \
+            --input jalog/build/package-input \
+            --main-jar "jalog-${{ steps.ver.outputs.version }}.jar" \
+            --main-class jalog.Genesis \
+            --name Jalog \
+            --app-version "${{ steps.ver.outputs.version }}" \
+            --description "Amateur Radio Logging Software" \
+            --vendor "Campbell Reed" \
+            --mac-package-name Jalog \
+            --java-options "--enable-native-access=ALL-UNNAMED" \
+            --dest jalog/build/packages
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos-dmg
+          path: jalog/build/packages/*.dmg

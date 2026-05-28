@@ -1,0 +1,145 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'jacoco'
+}
+
+version = '1.07'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+sourceSets {
+    main {
+        java.srcDirs = ['src/main/java']
+        resources.srcDirs = ['src/main/resources']
+    }
+    test {
+        java.srcDirs = ['src/test/java']
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.formdev:flatlaf:3.4.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.3'
+    testImplementation 'org.mockito:mockito-core:5.11.0'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+test {
+    useJUnitPlatform()
+    jvmArgs '-Djava.awt.headless=true'
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = true
+        html.required = true
+    }
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                'jalog/Genesis*.class',
+                'jalog/debug/**',
+                'jalog/jlogimpl/debug/**',
+                'jalog/jlogimpl/gui/**',
+                'jalog/jlog/gui/**',
+                'jalog/tester/**',
+                'jalog/util/ScreenUtil*.class',
+                'jalog/jlogimpl/remotecallsign/callookreader/CallookReaderImpl*.class',
+                'jalog/jlogimpl/remotecallsign/callookreader/CallookReaderThread*.class',
+                'jalog/jlog/util/SystemDebug*.class',
+                'jalog/factory/BasicFactory*.class',
+            ])
+        }))
+    }
+}
+
+jar {
+    archiveBaseName = 'jalog'
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    manifest {
+        attributes(
+            'Manifest-Version': '1.0',
+            'Main-Class': 'jalog.Genesis',
+            'Class-Path': 'lib/flatlaf-3.4.1.jar',
+            'Enable-Native-Access': 'ALL-UNNAMED'
+        )
+    }
+
+    from sourceSets.main.output
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+task copyToLib(type: Copy) {
+    into layout.buildDirectory.dir("libs/lib")
+    from configurations.runtimeClasspath
+    include '*.jar'
+}
+
+task copyIniFile(type: Copy) {
+    from 'src/main/resources'
+    include '*.ini'
+    into layout.buildDirectory.dir("libs")
+}
+
+jar.dependsOn copyToLib
+jar.dependsOn copyIniFile
+
+application {
+    mainClass = 'jalog.Genesis'
+    applicationDefaultJvmArgs = ['--enable-native-access=ALL-UNNAMED']
+}
+
+task packageApp {
+    dependsOn jar
+    description = 'Creates a native installer for the current platform via jpackage (requires JDK 17+).'
+    group = 'distribution'
+
+    doLast {
+        def pkgInput = layout.buildDirectory.dir('package-input').get().asFile
+        pkgInput.mkdirs()
+        copy {
+            from layout.buildDirectory.dir('libs')
+            include "jalog-${version}.jar", 'jalog.ini'
+            into pkgInput
+        }
+
+        def os = System.getProperty('os.name').toLowerCase()
+        def pkgType = os.contains('win') ? 'msi' : os.contains('mac') ? 'dmg' : 'rpm'
+
+        // MSI requires Major.Minor.Build; append .0 if version has fewer than 3 parts
+        def pkgVersion = (pkgType == 'msi' && version.toString().count('.') < 2)
+            ? "${version}.0" : version.toString()
+
+        def pkgDest = layout.buildDirectory.dir('packages').get().asFile
+        pkgDest.mkdirs()
+
+        exec {
+            commandLine 'jpackage',
+                '--type',         pkgType,
+                '--input',        pkgInput.absolutePath,
+                '--main-jar',     "jalog-${version}.jar",
+                '--main-class',   'jalog.Genesis',
+                '--name',         'Jalog',
+                '--app-version',  pkgVersion,
+                '--description',  'Amateur Radio Logging Software',
+                '--vendor',       'Campbell Reed',
+                '--java-options', '--enable-native-access=ALL-UNNAMED',
+                '--dest',         pkgDest.absolutePath
+        }
+
+        println "Package written to: ${pkgDest}"
+    }
+}
