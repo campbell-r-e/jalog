@@ -9,6 +9,7 @@ dist/
 .gradle/
 !gradle/wrapper/gradle-wrapper.jar
 !gradle/wrapper/gradle-wrapper.properties
+!jalog/gradle/wrapper/gradle-wrapper.jar
 
 # Compiled classes and packages
 *.class
