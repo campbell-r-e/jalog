@@ -1,7 +1,7 @@
 {
-  "name": "java-openlogbook",
+  "name": "jalog",
   "version": "1.0.0",
-  "description": "Openlogbook - Amateur Radio Logging Software About Openlogbook",
+  "description": "Jalog - Amateur Radio Logging Software",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

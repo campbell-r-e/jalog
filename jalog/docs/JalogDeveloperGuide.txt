@@ -1,0 +1,138 @@
+Jalog Developer Guide
+=====================
+
+Source Layout
+-------------
+The Gradle project lives in the jalog/ subdirectory of the repository.
+
+  src/main/java/jalog/           Entry point: Genesis.java
+  src/main/java/jalog/jlog/      Public interfaces and abstract base classes
+  src/main/java/jalog/jlogimpl/  Concrete implementations
+  src/main/java/jalog/factory/   Factory classes for creating application objects
+  src/main/java/jalog/debug/     Debug and monitoring framework
+  src/main/java/jalog/util/      Shared utilities
+  src/main/java/jalog/tester/    Test data helpers
+  lib/                           Runtime JARs (FlatLaf)
+  docs/                          Developer documentation
+
+Build
+-----
+Requires JDK 21 or later. The Gradle wrapper is included; no separate
+Gradle install is needed.
+
+  ./gradlew clean build          # macOS / Linux
+  gradlew.bat clean build        # Windows
+
+Output: build/libs/jalog.jar
+
+Java target: 21 (source and bytecode compatibility)
+Gradle wrapper: 8.13
+Dependencies (build.gradle):
+  com.formdev:flatlaf:3.4.1
+
+Key Packages
+------------
+
+jalog
+  Genesis.java - Main class. Builds the top-level JFrame (MDI desktop),
+  loads the ini file via Utility, applies the saved FlatLaf theme on
+  window open, and wires up the menu bar.
+
+jalog.jlog
+  Interfaces and abstract classes that define the public API:
+  LogBook, LogEntry, and all log entry sub-interfaces (Callsign, Era,
+  FrequencyInformation, Rst, Qsl, Satellite, Contest, Iota, Misc,
+  ContactAddress, ContactStationInformation).
+  Also contains abstract GUI base classes: AbstractLogBookFrame,
+  AbstractLogEntryDialog, AbstractOptionsDialogBox, AbstractNotepadFrame,
+  AbstractWindowMenu.
+
+jalog.jlogimpl
+  Concrete implementations split into sub-packages:
+
+  logbook/
+    LogBookImpl.java         - Manages the list of log entries.
+    logentry/                - One Impl class per log entry interface.
+
+  filehandler/adif/
+    ReadAdifFile.java        - Parses ADIF files into LogEntry instances.
+    WriteAdifFile.java       - Serialises LogEntry instances to ADIF.
+    AdifConstants.java       - ADIF tag name constants.
+
+  remotecallsign/
+    RemoteCallsignInformationImpl.java
+    callookreader/
+      CallookReaderThread.java   - Background thread; opens
+                                   https://callook.info/{callsign}/xml
+                                   and parses the XML response.
+
+  gui/
+    LogBookFrame.java         - Internal frame (JInternalFrame) showing
+                                the log table and Add/Edit/Delete buttons.
+    LogBookTableModel.java    - TableModel backing the log table.
+    logentrydialog/
+      LogEntryDialog.java     - Tabbed dialog for creating/editing a QSO.
+      GeneralPanel, AddressPanel, QslPanel, ContestPanel,
+      NotesPanel, SatellitePanel, ContactInformationPanel
+    optiondialog/
+      OptionsDialogBox.java   - Options dialog with three tabs.
+      ThemePanel.java         - FlatLaf theme selector tab.
+      TableColumnPanel.java   - Column visibility/order tab.
+      DefaultValuesPanel.java - Default field values tab.
+    notepad/
+      NotepadFrame.java       - Simple internal-frame text editor.
+
+  debug/
+    DebugManager.java, InternalEventImpl.java, ApiWalker.java
+
+jalog.factory
+  BasicFactory.java           - Creates GUI objects (AboutDialogBox,
+                                NotepadFrame, WindowMenu, OptionsDialogBox).
+  DefaultLogBookFactory.java  - Creates LogBook and LogEntry instances.
+  AdifFileFactory.java        - Creates ADIF file handler instances.
+  CallsignInformationFactory.java
+
+jalog.debug
+  Stand-alone debug/monitoring framework (Debug, DebugTable,
+  monitor/MonitorFrame, etc.). Largely self-contained.
+
+jalog.util
+  AppProperties.java    - Simple key/value property store; reads from and
+                          writes to a .ini file.
+  UpdateManager.java    - Event bus for theme-change and table-column-change
+                          notifications (not a software updater).
+  Utility.java          - Loads and saves the application ini file; file
+                          history management; date/time format helpers.
+  StringUtility.java    - Low-level byte/hex string conversion utilities.
+  ScreenUtil.java       - Screen and window sizing helpers.
+
+jalog.tester
+  LogCreator.java       - Generates sample log entries for testing.
+
+Ini File
+--------
+Settings are persisted to jalog.ini (same directory as the JAR, or
+extracted from the JAR's resources on first run). Utility.load() and
+Utility.write() handle read/write.
+
+Keys: Column, Operator, Band, Mode, RstSent, RstReceived,
+      IsCustomTheme, Theme, XtraScrollBar, Background,
+      File (recent file history)
+
+Theme System
+------------
+FlatLaf is the only look-and-feel in use. The four built-in themes
+(Light, Dark, IntelliJ, Darcula) are listed in OptionSkinChooser.
+The selected theme class name is persisted in jalog.ini under "Theme=".
+On startup, Genesis.postOpenInit() calls UIManager.setLookAndFeel()
+with the stored class name.
+
+Adding New Features
+-------------------
+- New log entry fields: add to the relevant interface in jalog.jlog,
+  implement in the corresponding Impl class under jlogimpl/logbook/logentry,
+  then wire up the UI in LogEntryDialog and the relevant panel.
+- New file formats: follow the pattern in jlogimpl/filehandler/adif and
+  register the factory in AdifFileFactory or a new factory class.
+- New remote lookup services: follow CallookReaderThread; implement
+  ConnectionReader from jalog.jlog.remotecallsign.

@@ -1,0 +1,18 @@
+All items completed.
+
+[DONE] serialver commands (developer utility, not a feature)
+
+[DONE] Callsign: CALL, OPERATOR
+[DONE] ContactAddress: NAME, ADDRESS, CNTY, CONT, STATE
+[DONE] ContactStationInformation: QTH, IOTA, AGE, CQZ, DXCC, GRIDSQUARE, ITUZ
+[DONE] Era: QSO_DATE, TIME_ON, TIME_OFF
+[DONE] FrequencyInformation: MODE, BAND, FREQ, TX_PWR, RX_PWR
+[DONE] Qsl: QSLRDATE, QSLSDATE, QSL_RCVD, QSL_SENT, QSLMSG, QSL_VIA
+[DONE] Rst: RST_RCVD, RST_SENT
+[DONE] Misc: COMMENT, ARRL_SECT, NOTES, PFX, TEN_TEN, VE_PROV
+[DONE] Satellite: PROP_MODE, SAT_MODE, SAT_NAME
+[DONE] Contest: CONTEST_ID, SRX, STX
+[DONE] NotFound - Locator in Misc (removed)
+[DONE] General Panel layout
+[DONE] Address Panel layout
+[DONE] Debug package (jalog.debug: Debugable, FullDebugable, DebugTable, Debug)

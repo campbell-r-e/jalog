@@ -1,0 +1,144 @@
+Jalog - In-Depth Technical Reference
+=====================================
+
+Application Startup
+-------------------
+Main class: jalog.Genesis (extends JFrame)
+
+Genesis() constructor:
+  1. coreInit() - Looks for jalog.ini next to the JAR. If absent, extracts
+     the bundled default from the JAR's classpath resources. Loads settings
+     into the OptionsDialogBox via Utility.load().
+  2. initComponents() - Builds the JMenuBar, JDesktopPane (MDI container),
+     and wires window/action listeners.
+
+windowOpened event -> postOpenInit():
+  Applies the saved FlatLaf theme (UIManager.setLookAndFeel + updateComponentTreeUI)
+  and fires a theme update event so all listeners repaint.
+
+main(): calls FlatLightLaf.setup() before constructing Genesis so FlatLaf
+is the default LAF before any Swing component is created.
+
+Log Data Model
+--------------
+jalog.jlog.logbook.LogBook (interface)
+  Managed by LogBookImpl: holds an ordered list of LogEntry objects.
+
+jalog.jlog.logbook.jlogentry.LogEntry (interface)
+  Composed of sub-interfaces, each implemented by a corresponding Impl:
+
+  Callsign           / CallsignImpl         - operator and contact callsign
+  Era                / EraImpl              - QSO date, time on, time off
+  FrequencyInformation / FrequencyInformationImpl - freq, band, mode, power
+  Rst                / RstImpl              - RST sent/received
+  Qsl                / QslImpl              - QSL sent/received dates, status
+  ContactAddress     / ContactAddressImpl   - name, address, county, state
+  ContactStationInformation / ContactStationInformationImpl - QTH, grid, DXCC
+  Contest            / ContestImpl          - serial numbers
+  Satellite          / SatelliteImpl        - satellite name and mode
+  Iota               / IotaImpl             - IOTA reference
+  Misc               / MiscImpl             - comment, notes, contest ID
+
+GUI Architecture
+----------------
+The application uses Swing MDI (JDesktopPane / JInternalFrame).
+
+Genesis owns the main JFrame. It opens JInternalFrames for each log file:
+
+  LogBookFrame (JInternalFrame)
+    LogBookTableModel (AbstractTableModel)
+      - Columns defined by TableColumnEnum; order/visibility persisted in ini.
+    Add/Edit/Delete buttons + right-click popup trigger LogEntryDialog.
+
+  LogEntryDialog (JDialog)
+    JTabbedPane containing:
+      GeneralPanel           - callsign, date, time, freq, band, mode, power, RST
+      ContactInformationPanel - QTH, grid square, DXCC, CQ/ITU zone, IOTA
+      AddressPanel           - name, address, county, state, continent
+      QslPanel               - QSL sent/received
+      ContestPanel           - serial numbers
+      SatellitePanel         - satellite name and mode
+      NotesPanel             - free-text notes
+
+  OptionsDialogBox (JDialog)
+    ThemePanel             - FlatLaf theme chooser (OptionSkinChooser + checkbox)
+    TableColumnPanel       - column visibility and order
+    DefaultValuesPanel     - default operator, band, mode, RST values
+
+  NotepadFrame (JInternalFrame)
+    Simple JTextArea editor for freeform notes.
+
+Theme System
+------------
+FlatLaf 3.4.1 (requires Java 11+, targets Java 21).
+
+OptionSkinChooser holds a static map of four FlatLaf themes:
+  "FlatLaf Light"    -> com.formdev.flatlaf.FlatLightLaf
+  "FlatLaf Dark"     -> com.formdev.flatlaf.FlatDarkLaf
+  "FlatLaf IntelliJ" -> com.formdev.flatlaf.FlatIntelliJLaf
+  "FlatLaf Darcula"  -> com.formdev.flatlaf.FlatDarculaLaf
+
+getSelectedSkin() returns the class name string (what gets persisted).
+apply() calls UIManager.setLookAndFeel(className).
+
+The UpdateManager event bus (postThemeUpdateEvent) notifies all registered
+ThemeUpdateListeners, each of which calls SwingUtilities.updateComponentTreeUI
+on its own component tree.
+
+File Handling
+-------------
+Only ADIF format is supported for read/write.
+
+ReadAdifFile  - Reads an .adi file tag by tag; populates LogEntry fields
+                using AdifConstants for tag-name lookup.
+WriteAdifFile - Iterates LogEntry fields and writes ADIF tags.
+
+Ini persistence (Utility.load / Utility.write) uses a simple line-by-line
+key=value format. Keys are defined as constants in Utility.java.
+
+Remote Callsign Lookup
+-----------------------
+CallookReaderThread runs the lookup in a background thread.
+CallookReaderImpl opens a connection to:
+
+  https://callook.info/{callsign}/xml
+
+and parses the XML response using tag names defined in CallookXmlConstants.
+Results are stored in a RemoteCallsignInformation object and returned to
+the UI. The endpoint URL is the only thing specific to Callook.info;
+everything else (threading, parsing, result handling) is generic.
+
+Utility Classes
+---------------
+AppProperties     - Static key/value store backed by java.util.Properties.
+                    Methods: addProperty(), getStringProperty(),
+                    getBooleanProperty(), getIntProperty(), load(), store().
+
+UpdateManager     - Event bus for UI update notifications.
+                    addThemeUpdateListener / postThemeUpdateEvent
+                    addTableUpdateListener / postTableColumnChangeEvent
+
+Utility           - Ini file read/write, recent file history, date/time
+                    format helpers (getDateFormat, getTimeFormat, etc.)
+
+StringUtility     - Low-level byte and hex conversion utilities.
+
+ScreenUtil        - Centres windows on screen.
+
+Debug Framework
+---------------
+jalog.debug provides a runtime monitoring panel (MonitorFrame / DebugFrame)
+accessible via Help -> Debug. Objects register themselves with Debug.addObject()
+and implement Debugable.getDebugTable() to expose their state as a table.
+The framework is self-contained and does not affect application behaviour
+when the monitor is closed.
+
+Factory Pattern
+---------------
+All concrete object creation goes through factory classes so the jlog
+interface layer never directly references jlogimpl classes:
+
+  BasicFactory             - GUI objects (AboutDialogBox, NotepadFrame, etc.)
+  DefaultLogBookFactory    - LogBook and LogEntry instances
+  AdifFileFactory          - ADIF reader/writer instances
+  CallsignInformationFactory - Remote callsign lookup instances
