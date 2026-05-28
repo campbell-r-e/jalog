@@ -58,6 +58,54 @@ jobs:
           name: linux-rpm
           path: jalog/build/packages/*.rpm
 
+  # ── Linux → Debian/Ubuntu DEB (installable with gdebi, dpkg, or apt) ────────
+  build-linux-deb:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Build JAR
+        run: ./gradlew jar
+        working-directory: jalog
+
+      - name: Prepare jpackage input
+        run: |
+          mkdir -p jalog/build/package-input
+          cp jalog/build/libs/jalog-*.jar jalog/build/package-input/
+          cp jalog/build/libs/jalog.ini jalog/build/package-input/ 2>/dev/null || true
+
+      - name: Get version
+        id: ver
+        run: |
+          echo "version=$(cd jalog && ./gradlew -q properties | grep '^version:' | awk '{print $2}')" >> "$GITHUB_OUTPUT"
+
+      - name: Package DEB
+        run: |
+          jpackage \
+            --type deb \
+            --input jalog/build/package-input \
+            --main-jar "jalog-${{ steps.ver.outputs.version }}.jar" \
+            --main-class jalog.Genesis \
+            --name Jalog \
+            --app-version "${{ steps.ver.outputs.version }}" \
+            --description "Amateur Radio Logging Software" \
+            --vendor "Campbell Reed" \
+            --linux-package-name jalog \
+            --linux-menu-group "Utility" \
+            --linux-shortcut \
+            --java-options "--enable-native-access=ALL-UNNAMED" \
+            --dest jalog/build/packages
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux-deb
+          path: jalog/build/packages/*.deb
+
   # ── Windows → MSI installer ─────────────────────────────────────────────────
   build-windows-msi:
     runs-on: windows-latest

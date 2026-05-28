@@ -117,7 +117,9 @@ task packageApp {
         }
 
         def os = System.getProperty('os.name').toLowerCase()
-        def pkgType = os.contains('win') ? 'msi' : os.contains('mac') ? 'dmg' : 'rpm'
+        // On Linux default to deb (works with gdebi/dpkg/apt); override with -PlinuxPackageType=rpm
+        def linuxType = project.findProperty('linuxPackageType') ?: 'deb'
+        def pkgType = os.contains('win') ? 'msi' : os.contains('mac') ? 'dmg' : linuxType
 
         // MSI requires Major.Minor.Build; append .0 if version has fewer than 3 parts
         def pkgVersion = (pkgType == 'msi' && version.toString().count('.') < 2)
@@ -126,19 +128,22 @@ task packageApp {
         def pkgDest = layout.buildDirectory.dir('packages').get().asFile
         pkgDest.mkdirs()
 
-        exec {
-            commandLine 'jpackage',
-                '--type',         pkgType,
-                '--input',        pkgInput.absolutePath,
-                '--main-jar',     "jalog-${version}.jar",
-                '--main-class',   'jalog.Genesis',
-                '--name',         'Jalog',
-                '--app-version',  pkgVersion,
-                '--description',  'Amateur Radio Logging Software',
-                '--vendor',       'Campbell Reed',
-                '--java-options', '--enable-native-access=ALL-UNNAMED',
-                '--dest',         pkgDest.absolutePath
+        def cmd = ['jpackage',
+            '--type',         pkgType,
+            '--input',        pkgInput.absolutePath,
+            '--main-jar',     "jalog-${version}.jar",
+            '--main-class',   'jalog.Genesis',
+            '--name',         'Jalog',
+            '--app-version',  pkgVersion,
+            '--description',  'Amateur Radio Logging Software',
+            '--vendor',       'Campbell Reed',
+            '--java-options', '--enable-native-access=ALL-UNNAMED',
+            '--dest',         pkgDest.absolutePath
+        ]
+        if (pkgType == 'deb' || pkgType == 'rpm') {
+            cmd += ['--linux-package-name', 'jalog', '--linux-menu-group', 'Utility', '--linux-shortcut']
         }
+        exec { commandLine cmd }
 
         println "Package written to: ${pkgDest}"
     }
