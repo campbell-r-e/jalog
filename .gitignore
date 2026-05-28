@@ -19,6 +19,10 @@ dist/
 *.zip
 *.tar.gz
 *.rar
+# Arch packaging artefacts (JAR is copied here during build, not committed)
+packaging/arch/*.jar
+packaging/arch/pkg/
+packaging/arch/src/
 
 # Runtime / user data files
 *.adi

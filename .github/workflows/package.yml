@@ -106,6 +106,52 @@ jobs:
           name: linux-deb
           path: jalog/build/packages/*.deb
 
+  # ── Arch Linux → .pkg.tar.zst (installable with pacman -U or yay) ───────────
+  build-arch-pkg:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Build JAR
+        run: ./gradlew jar
+        working-directory: jalog
+
+      - name: Get version
+        id: ver
+        run: |
+          echo "version=$(cd jalog && ./gradlew -q properties | grep '^version:' | awk '{print $2}')" >> "$GITHUB_OUTPUT"
+
+      - name: Prepare PKGBUILD
+        run: |
+          VERSION="${{ steps.ver.outputs.version }}"
+          cp jalog/build/libs/jalog-${VERSION}.jar packaging/arch/
+          sed -i "s/@VERSION@/${VERSION}/" packaging/arch/PKGBUILD
+
+      - name: Build package in Arch Linux container
+        run: |
+          docker run --rm \
+            -v "$PWD/packaging/arch":/pkg \
+            archlinux:latest \
+            bash -c "
+              pacman -Syu --noconfirm &&
+              pacman -S --noconfirm base-devel sudo &&
+              useradd -m builder &&
+              echo 'builder ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers &&
+              chown -R builder:builder /pkg &&
+              cd /pkg &&
+              sudo -u builder makepkg --noconfirm
+            "
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: arch-pkg
+          path: packaging/arch/*.pkg.tar.zst
+
   # ── Windows → MSI installer ─────────────────────────────────────────────────
   build-windows-msi:
     runs-on: windows-latest

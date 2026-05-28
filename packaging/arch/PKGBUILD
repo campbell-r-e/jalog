@@ -1,0 +1,36 @@
+# Maintainer: Campbell Reed <campbellreed2017@gmail.com>
+pkgname=jalog
+pkgver=@VERSION@
+pkgrel=1
+pkgdesc="Amateur Radio Logging Software for amateur radio operators"
+arch=('any')
+url="https://github.com/septantrionalis/jalog"
+license=('GPL-2.0-only')
+depends=('java-runtime>=17')
+source=("jalog-${pkgver}.jar")
+noextract=("jalog-${pkgver}.jar")
+sha256sums=('SKIP')
+
+package() {
+    # Launcher wrapper
+    install -Dm755 /dev/stdin "${pkgdir}/usr/bin/jalog" <<'LAUNCHER'
+#!/bin/sh
+exec java --enable-native-access=ALL-UNNAMED -jar /opt/jalog/jalog.jar "$@"
+LAUNCHER
+
+    # Application JAR
+    install -Dm644 "${srcdir}/jalog-${pkgver}.jar" "${pkgdir}/opt/jalog/jalog.jar"
+
+    # XDG desktop entry
+    install -Dm644 /dev/stdin "${pkgdir}/usr/share/applications/jalog.desktop" <<'DESKTOP'
+[Desktop Entry]
+Name=Jalog
+GenericName=Ham Radio Logger
+Comment=Amateur Radio Logging Software
+Exec=/usr/bin/jalog
+Terminal=false
+Type=Application
+Categories=Utility;HamRadio;
+Keywords=ham;radio;qso;adif;logging;
+DESKTOP
+}
